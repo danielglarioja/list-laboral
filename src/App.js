@@ -61,7 +61,7 @@ class App extends React.Component {
 
   eliminar = (dato) => {
     var opcion = window.confirm(
-      "Confirma que deseas Eliminar este puesto => "+ dato.Puesto
+      "Por favor, Confirma que deseas Eliminar este puesto => "+ dato.Puesto
     );
     if (opcion === true) {
       var contador = 0;

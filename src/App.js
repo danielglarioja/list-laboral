@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "./logo.svg";
+import "./logo.svg";
 import "./App.css";
 
 import {
@@ -61,13 +61,14 @@ class App extends React.Component {
 
   eliminar = (dato) => {
     var opcion = window.confirm(
-      "Estás Seguro que deseas Eliminar este puesto " + dato.Puesto
+      "Confirma que deseas Eliminar este puesto => "+ dato.Puesto
     );
-    if (opcion == true) {
+    if (opcion === true) {
       var contador = 0;
       var arreglo = this.state.data;
+      // eslint-disable-next-line array-callback-return
       arreglo.map((registro) => {
-        if (dato.id == registro.id) {
+        if (dato.id === registro.id) {
           arreglo.splice(contador, 1);
         }
         contador++;
@@ -81,7 +82,7 @@ class App extends React.Component {
     var ingresodatos2 = document.querySelector("#agregarnuevo2").value;
     var ingresodatos3 = document.querySelector("#agregarnuevo3").value;
     var ingresodatos4 = document.querySelector("#agregarnuevo4").value;
-    if (ingresodatos && ingresodatos2 && ingresodatos3 && ingresodatos4 != "") {
+    if (ingresodatos && ingresodatos2 && ingresodatos3 && ingresodatos4 !== "") {
       var valorNuevo = { ...this.state.form };
       valorNuevo.id = this.state.data.length + 1;
       var lista = this.state.data;

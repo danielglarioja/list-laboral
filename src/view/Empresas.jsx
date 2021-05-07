@@ -1,6 +1,4 @@
 import React from "react";
-import "./logo.svg";
-
 import {
   Table,
   Button,
@@ -11,42 +9,27 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-const data = [
-  {
-    id: 1,
-    Puesto: "Mern Stack",
-    Empresa: "Telefonica",
-    Ciudad: "Madrid",
-    Pais: "España",
-  },
-  {
-    id: 2,
-    Puesto: "Sr Development Frontend",
-    Empresa: "Mercado Libre",
-    Ciudad: "Buenos Aires",
-    Pais: "Argentina",
-  },
-  {
-    id: 3,
-    Puesto: "Full Stack developer",
-    Empresa: "Google",
-    Ciudad: "California",
-    Pais: "Estados Unidos",
-  },
-];
+const data = [];
 
-class MiApp extends React.Component {
-  state = {
-    data: data,
-    modalInsertar: false,
-    form: {
-      id: "",
-      Puesto: "",
-      Empresa: "",
-      Ciudad: "",
-      Pais: "",
-    },
-  };
+export class Empresa extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      data: data,
+      modalInsertar: false,
+      form: {
+        Empresa: "",
+      },
+    };
+  }
+
+  componentDidMount() {
+    if (localStorage.getItem("dataEmpresa") != null) {
+      this.setState({
+        data: JSON.parse(localStorage.getItem("dataEmpresa")),
+      });
+    }
+  }
 
   mostrarModalInsertar = () => {
     this.setState({
@@ -60,14 +43,14 @@ class MiApp extends React.Component {
 
   eliminar = (dato) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.Puesto
+      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.Empresa
     );
     if (opcion === true) {
       var contador = 0;
       var arreglo = this.state.data;
       // eslint-disable-next-line array-callback-return
       arreglo.map((registro) => {
-        if (dato.id === registro.id) {
+        if (dato === registro) {
           arreglo.splice(contador, 1);
         }
         contador++;
@@ -77,18 +60,9 @@ class MiApp extends React.Component {
   };
 
   insertar = () => {
-    var ingresodatos = document.querySelector("#agregarnuevo").value;
-    var ingresodatos2 = document.querySelector("#agregarnuevo2").value;
-    var ingresodatos3 = document.querySelector("#agregarnuevo3").value;
-    var ingresodatos4 = document.querySelector("#agregarnuevo4").value;
-    if (
-      ingresodatos &&
-      ingresodatos2 &&
-      ingresodatos3 &&
-      ingresodatos4 !== ""
-    ) {
+    var ingresoEmpresa = document.querySelector("#agregarEmpresa").value;
+    if (ingresoEmpresa !== "") {
       var valorNuevo = { ...this.state.form };
-      valorNuevo.id = this.state.data.length + 1;
       var lista = this.state.data;
       lista.push(valorNuevo);
       this.setState({ modalInsertar: false, data: lista });
@@ -106,33 +80,35 @@ class MiApp extends React.Component {
     });
   };
 
+  saveData = () => {
+    window.localStorage.setItem("dataEmpresa", JSON.stringify(this.state.data));
+  };
+
   render() {
     return (
       <>
         <Container>
-          <h1>Trabajo de Daniel</h1>
+          <h1>EMPRESAS</h1>
+          <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
             Insertar nuevo Puesto
           </Button>
+          <Button color="primary" onClick={this.saveData}>
+            Guardar
+          </Button>
           <br />
           <Table>
             <thead>
               <tr>
-                <th>Puesto</th>
                 <th>Empresa</th>
-                <th>Ciudad</th>
-                <th>Pais</th>
               </tr>
             </thead>
             <tbody>
               {this.state.data.map((dato) => (
-                <tr key={dato.id}>
-                  <td>{dato.Puesto}</td>
+                <tr key={dato}>
                   <td>{dato.Empresa}</td>
-                  <td>{dato.Ciudad}</td>
-                  <td>{dato.Pais}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar
@@ -147,49 +123,13 @@ class MiApp extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
-              <label>Puesto:</label>
-              <input
-                id="agregarnuevo"
-                className="form-control"
-                name="Puesto"
-                type="text"
-                placeholder="Agrega el nuevo puesto"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
               <label>Empresa:</label>
               <input
-                id="agregarnuevo2"
+                id="agregarEmpresa"
                 className="form-control"
                 name="Empresa"
                 type="text"
                 placeholder="Nombre de la Empresa"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>Ciudad:</label>
-              <input
-                id="agregarnuevo3"
-                className="form-control"
-                name="Ciudad"
-                type="text"
-                placeholder="En que ciudad?"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>Pais:</label>
-              <input
-                id="agregarnuevo4"
-                className="form-control"
-                name="Pais"
-                type="text"
-                placeholder="En que Pais?"
                 onChange={this.handleChange}
               />
             </FormGroup>
@@ -199,6 +139,7 @@ class MiApp extends React.Component {
             <Button color="primary" onClick={() => this.insertar()}>
               Insertar
             </Button>
+
             <Button
               className="btn btn-danger"
               onClick={() => this.cerrarModalInsertar()}
@@ -211,5 +152,3 @@ class MiApp extends React.Component {
     );
   }
 }
-
-export default MiApp;

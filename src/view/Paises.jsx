@@ -9,13 +9,12 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-const data = [];
 
 export class Pais extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: data,
+      data: [],
       modalInsertar: false,
       form: {
         Pais: "",

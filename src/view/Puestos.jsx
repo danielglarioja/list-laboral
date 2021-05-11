@@ -9,13 +9,11 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-const data = [];
-
 export default class MiApp extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: data,
+      data: [],
       modalInsertar: false,
       form: {
         Puesto: "",
@@ -23,6 +21,12 @@ export default class MiApp extends React.Component {
         Ciudad: "",
         Pais: "",
       },
+      paises: [],
+      paisesSelected:'',
+      ciudades: [],
+      ciudadesSelected:'',
+      empresas: [],
+      empresasSelected:'',
     };
   }
 
@@ -32,6 +36,22 @@ export default class MiApp extends React.Component {
         data: JSON.parse(localStorage.getItem("data")),
       });
     }
+    if (localStorage.getItem("dataPais") != null) {
+      this.setState({
+        paises: JSON.parse(localStorage.getItem("dataPais")),
+      });
+    }
+    if (localStorage.getItem("dataCiudad") != null) {
+      this.setState({
+        ciudades: JSON.parse(localStorage.getItem("dataCiudad")),
+      });
+    }
+    if (localStorage.getItem("dataEmpresa") != null) {
+      this.setState({
+        empresas: JSON.parse(localStorage.getItem("dataEmpresa")),
+      });
+    }
+
   }
 
   mostrarModalInsertar = () => {
@@ -75,7 +95,11 @@ export default class MiApp extends React.Component {
     ) {
       var valorNuevo = { ...this.state.form };
       var lista = this.state.data;
+      console.log(lista)
       lista.push(valorNuevo);
+      valorNuevo.Pais = this.state.paisesSelected;
+      valorNuevo.Ciudad = this.state.ciudadesSelected;
+      valorNuevo.Empresa = this.state.empresasSelected;
       this.setState({ modalInsertar: false, data: lista });
     } else {
       alert("Debes completar todos los campos");
@@ -90,6 +114,19 @@ export default class MiApp extends React.Component {
       },
     });
   };
+
+  handleChangePais = (e) =>{
+    const pais = e.target.value;
+    this.setState({paisesSelected: pais})
+  }
+  handleChangeCiudad = (e) =>{
+    const ciudad = e.target.value;
+    this.setState({ciudadesSelected: ciudad})
+  }
+  handleChangeEmpresa = (e) =>{
+    const empresa = e.target.value;
+    this.setState({empresasSelected: empresa})
+  }
 
   saveData = () => {
     window.localStorage.setItem("data", JSON.stringify(this.state.data));
@@ -159,15 +196,15 @@ export default class MiApp extends React.Component {
                 className="form-control"
                 name="Empresa"
                 type="text"
-                onChange={this.handleChange}
+                onChange={this.handleChangeEmpresa}
               >
                 <option >Seleccionar Empresa</option>
-                {this.state.data.map((data, index) => (
+                {this.state.empresas.map((empresa, index) => (
                   <option
                     key={index + 1}
-                    value={JSON.stringify(localStorage.getItem("dataEmpresa"))}
+                    value={empresa.Empresa}
                   >
-                    {data.name}
+                    {empresa.Empresa}
                   </option>
                 ))}
               </select>
@@ -179,15 +216,15 @@ export default class MiApp extends React.Component {
                 className="form-control"
                 name="Ciudad"
                 type="text"
-                onChange={this.handleChange}
+                onChange={this.handleChangeCiudad}
               >
                 <option>Seleccionar Ciudad</option>
-                {this.state.data.map((data, index) => (
+                {this.state.ciudades.map((ciudad, index) => (
                   <option
                     key={index + 1}
-                    value={JSON.stringify(localStorage.getItem("dataCiudad"))}
+                    value={ciudad.Ciudad}
                   >
-                    {data.name}
+                    {ciudad.Ciudad}
                   </option>
                 ))}
               </select>
@@ -200,15 +237,15 @@ export default class MiApp extends React.Component {
                 className="form-control"
                 name="Pais"
                 type="text"
-                onChange={this.handleChange}
+                onChange={this.handleChangePais}
               >
                 <option>Seleccionar Pais</option>
-                {this.state.data.map((data, index) => (
+                {this.state.paises.map((pais, index) => (
                   <option
                     key={index + 1}
-                    value={JSON.stringify(localStorage.getItem("dataPais"))}
+                    value={pais.Pais}
                   >
-                    {data.name}
+                    {pais.Pais}
                   </option>
                 ))}
               </select>

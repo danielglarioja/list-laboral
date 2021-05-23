@@ -8,12 +8,14 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import { apiDataEmpresas } from "../apis/apiPrueba";
 
 export class Empresa extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      empresasFromAPI: [],
       modalInsertar: false,
       form: {
         Empresa: "",
@@ -22,11 +24,16 @@ export class Empresa extends React.Component {
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataEmpresa") != null) {
+    /*if (localStorage.getItem("dataEmpresa") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataEmpresa")),
       });
-    }
+    }*/
+    apiDataEmpresas().then((res) =>
+      this.setState({
+        empresasFromAPI: res,
+      })
+    );
   }
 
   mostrarModalInsertar = () => {
@@ -104,9 +111,9 @@ export class Empresa extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.empresasFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Empresa}</td>
+                  <td>{dato.empresa}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar

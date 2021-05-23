@@ -8,12 +8,14 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import { apiDataCiudades } from "../apis/apiPrueba";
 
 export class Ciudad extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      ciudadesFromAPI: [],
       modalInsertar: false,
       form: {
         Ciudad: "",
@@ -22,11 +24,16 @@ export class Ciudad extends React.Component {
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataCiudad") != null) {
+    /*if (localStorage.getItem("dataCiudad") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataCiudad")),
       });
-    }
+    }*/
+    apiDataCiudades().then((res) =>
+      this.setState({
+        ciudadesFromAPI: res,
+      })
+    );
   }
 
   mostrarModalInsertar = () => {
@@ -104,9 +111,9 @@ export class Ciudad extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.ciudadesFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Ciudad}</td>
+                  <td>{dato.ciudad}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar

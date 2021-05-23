@@ -8,12 +8,16 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import { apiDataPaises, apiDataCiudades, apiDataEmpresas } from "../apis/apiPrueba";
 
 export default class MiApp extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      paisesFromAPI: [],
+      ciudadesFromAPI: [],
+      empresasFromAPI: [],
       modalInsertar: false,
       form: {
         Puesto: "",
@@ -31,12 +35,34 @@ export default class MiApp extends React.Component {
   }
 
   componentDidMount() {
-    if (localStorage.getItem("data") != null) {
+if (localStorage.getItem("data") != null) {
+  this.setState({
+    data: JSON.parse(localStorage.getItem("data")),
+  });
+}
+
+    /*apiDataPuestos().then((res) =>
       this.setState({
-        data: JSON.parse(localStorage.getItem("data")),
-      });
-    }
-    if (localStorage.getItem("dataPais") != null) {
+        puestosFromAPI: res,
+      })
+    );*/
+    apiDataPaises().then((res) =>
+      this.setState({
+        paisesFromAPI: res,
+      })
+    );
+    apiDataCiudades().then((res) =>
+      this.setState({
+        ciudadesFromAPI: res,
+      })
+    );
+    apiDataEmpresas().then((res) =>
+      this.setState({
+        empresasFromAPI: res,
+      })
+    );
+    
+    /*if (localStorage.getItem("dataPais") != null) {
       this.setState({
         paises: JSON.parse(localStorage.getItem("dataPais")),
       });
@@ -50,8 +76,7 @@ export default class MiApp extends React.Component {
       this.setState({
         empresas: JSON.parse(localStorage.getItem("dataEmpresa")),
       });
-    }
-
+    }*/
   }
 
   mostrarModalInsertar = () => {
@@ -198,13 +223,10 @@ export default class MiApp extends React.Component {
                 type="text"
                 onChange={this.handleChangeEmpresa}
               >
-                <option >Seleccionar Empresa</option>
-                {this.state.empresas.map((empresa, index) => (
-                  <option
-                    key={index + 1}
-                    value={empresa.Empresa}
-                  >
-                    {empresa.Empresa}
+                <option>Seleccionar Empresa</option>
+                {this.state.empresasFromAPI.map((empresa, index) => (
+                  <option value={empresa.empresa}>
+                    {empresa.empresa}
                   </option>
                 ))}
               </select>
@@ -219,12 +241,9 @@ export default class MiApp extends React.Component {
                 onChange={this.handleChangeCiudad}
               >
                 <option>Seleccionar Ciudad</option>
-                {this.state.ciudades.map((ciudad, index) => (
-                  <option
-                    key={index + 1}
-                    value={ciudad.Ciudad}
-                  >
-                    {ciudad.Ciudad}
+                {this.state.ciudadesFromAPI.map((ciudad, index) => (
+                  <option value={ciudad.ciudad}>
+                    {ciudad.ciudad}
                   </option>
                 ))}
               </select>
@@ -240,12 +259,9 @@ export default class MiApp extends React.Component {
                 onChange={this.handleChangePais}
               >
                 <option>Seleccionar Pais</option>
-                {this.state.paises.map((pais, index) => (
-                  <option
-                    key={index + 1}
-                    value={pais.Pais}
-                  >
-                    {pais.Pais}
+                {this.state.paisesFromAPI.map((pais, index) => (
+                  <option  value={pais.pais}>
+                    {pais.pais}
                   </option>
                 ))}
               </select>

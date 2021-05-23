@@ -8,27 +8,39 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
-
+import { apiDataPaises } from "../apis/apiPrueba";
 
 export class Pais extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      paisesFromAPI: [],
       modalInsertar: false,
       form: {
         Pais: "",
       },
     };
   }
+  /*updateStateFromAPI = (datos) =>{
+    this.setState({
+      paisesFromAPI: datos
+    })
+  }*/
 
   componentDidMount() {
-    if (localStorage.getItem("dataPais") != null) {
+     /*if (localStorage.getItem("dataPais") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataPais")),
       });
-    }
-  }
+    }*/
+   /* apiData().then(res => this.setState({
+      paisesFromAPI: res
+    }))*/
+    apiDataPaises().then(res => this.setState({
+      paisesFromAPI: res
+    }))
+  };
 
   mostrarModalInsertar = () => {
     this.setState({
@@ -105,9 +117,9 @@ export class Pais extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.paisesFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Pais}</td>
+                  <td>{dato.pais}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar

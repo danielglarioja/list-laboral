@@ -8,48 +8,42 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
-import {apiDataPaises} from "../apis/apiPrueba";
-import {postApiDataPaises} from "../apis/apiPrueba"
+import { apiDataTrabajos, apiDataEmpresas } from "../apis/apiPrueba";
 
-export class Pais extends React.Component {
+export class Trabajo extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
-      paisesFromAPI: [],
+      trabajosFromAPI: [],
+      empresasFromAPI: [],
       modalInsertar: false,
       form: {
-        id:"",
-        Pais: "",
+        id: "",
+        Trabajo: "",
+        Descripcion: "",
+        Empresa: "",
       },
     };
   }
-  /*updateStateFromAPI = (datos) =>{
-    this.setState({
-      paisesFromAPI: datos
-    })
-  }*/
 
   componentDidMount() {
-     /*if (localStorage.getItem("dataPais") != null) {
+    /*if (localStorage.getItem("dataCiudad") != null) {
       this.setState({
-        data: JSON.parse(localStorage.getItem("dataPais")),
+        data: JSON.parse(localStorage.getItem("dataCiudad")),
       });
     }*/
-   /* apiData().then(res => this.setState({
-      paisesFromAPI: res
-    }))*/
-    postApiDataPaises().then((res) =>
+    apiDataEmpresas().then((res) =>
       this.setState({
-        paisesFromAPI: res
+        empresasFromAPI: res,
       })
     );
-
-    apiDataPaises().then(res => 
+    apiDataTrabajos().then((res) =>
       this.setState({
-      paisesFromAPI: res
-    }));
-  };
+        trabajosFromAPI: res,
+      })
+    );
+  }
 
   mostrarModalInsertar = () => {
     this.setState({
@@ -63,7 +57,7 @@ export class Pais extends React.Component {
 
   eliminar = (dato) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.name
+      "Por favor, Confirma que deseas Eliminar este trabajo => " + dato.position
     );
     if (opcion === true) {
       var contador = 0;
@@ -80,14 +74,14 @@ export class Pais extends React.Component {
   };
 
   insertar = () => {
-    var ingresoPais = document.querySelector("#agregarPais").value;
-    if (ingresoPais !== "") {
+    var ingresoEmpresa = document.querySelector("#agregarEmpresa").value;
+    if (ingresoEmpresa !== "") {
       var valorNuevo = { ...this.state.form };
       var lista = this.state.data;
       lista.push(valorNuevo);
       this.setState({ modalInsertar: false, data: lista });
     } else {
-      alert("Debes ingresar un Pais");
+      alert("Debes ingresar un trabajo");
     }
   };
 
@@ -101,19 +95,19 @@ export class Pais extends React.Component {
   };
 
   saveData = () => {
-    window.localStorage.setItem("dataPais", JSON.stringify(this.state.data));
+    window.localStorage.setItem("dataTrabajo", JSON.stringify(this.state.data));
   };
 
   render() {
     return (
       <>
         <Container>
-          <h1> PAISES</h1>
+          <h1>TRABAJOS</h1>
           <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
-            Insertar nuevo Pais
+            Insertar nuevo Trabajo
           </Button>
           <Button color="primary" onClick={this.saveData}>
             Guardar
@@ -123,14 +117,18 @@ export class Pais extends React.Component {
             <thead>
               <tr>
                 <th>id</th>
-                <th>Pais</th>
+                <th>Trabajo</th>
+                <th>Descripcion</th>
+                <th>Empresa</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.paisesFromAPI.map((dato) => (
+              {this.state.trabajosFromAPI.map((dato) => (
                 <tr key={dato}>
                   <td>{dato.id}</td>
-                  <td>{dato.name}</td>
+                  <td>{dato.position}</td>
+                  <td>{dato.description}</td>
+                  <td>{dato.organizationId}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar
@@ -156,15 +154,41 @@ export class Pais extends React.Component {
               />
             </FormGroup>
             <FormGroup>
-              <label>Pais:</label>
+              <label>Trabajo:</label>
               <input
-                id="agregarPais"
+                id="agregarTrabajo"
                 className="form-control"
-                name="Pais"
+                name="Trabajo"
                 type="text"
-                placeholder="Ingresar un Pais"
+                placeholder="Ingrese un Trabajo"
                 onChange={this.handleChange}
               />
+            </FormGroup>
+            <FormGroup>
+              <label>Descripcion:</label>
+              <input
+                id="agregarDescripcionTrabajo"
+                className="form-control"
+                name="Descripcion"
+                type="text"
+                placeholder="Ingrese una descripcion del Trabajo"
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Empresa:</label>
+              <select
+                id="agregarEmpresa"
+                className="form-control"
+                name="Empresa"
+                type="text"
+                onChange={this.handleChange}
+              >
+                <option>Seleccionar Empresa</option>
+                {this.state.empresasFromAPI.map((empresa, index) => (
+                  <option value={empresa.name}>{empresa.name}</option>
+                ))}
+              </select>
             </FormGroup>
           </ModalBody>
 

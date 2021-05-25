@@ -8,26 +8,40 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import {apiDataCiudades, apiDataEmpresas} from "../apis/apiPrueba"
 
 export class Empresa extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      ciudadesFromAPI: [],
+      empresasFromAPI: [],
       modalInsertar: false,
       form: {
+        id: "",
         Empresa: "",
+        ciudad: ""
       },
     };
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataEmpresa") != null) {
+    /*if (localStorage.getItem("dataEmpresa") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataEmpresa")),
-      });
-    }
-  }
+      });*/
+    apiDataCiudades().then((res) =>
+      this.setState({
+        ciudadesFromAPI: res,
+      })
+    );
+    apiDataEmpresas().then((res) =>
+      this.setState({
+        empresasFromAPI: res,
+      })
+    );
+  };      
 
   mostrarModalInsertar = () => {
     this.setState({
@@ -100,13 +114,17 @@ export class Empresa extends React.Component {
           <Table>
             <thead>
               <tr>
+                <th>id</th>
                 <th>Empresa</th>
+                <th>Ciudad</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.empresasFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Empresa}</td>
+                  <td>{dato.id}</td>
+                  <td>{dato.name}</td>
+                  <td>{dato.placeId}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar
@@ -121,6 +139,17 @@ export class Empresa extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
+              <label>id:</label>
+              <input
+                id="agregarId"
+                className="form-control"
+                name="id"
+                type="text"
+                placeholder="Ingresar un id"
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
               <label>Empresa:</label>
               <input
                 id="agregarEmpresa"
@@ -129,7 +158,22 @@ export class Empresa extends React.Component {
                 type="text"
                 placeholder="Nombre de la Empresa"
                 onChange={this.handleChange}
-              />
+              />              
+            </FormGroup>
+            <FormGroup>
+              <label>Ciudad:</label>
+              <select
+                id="agregarCiudad"
+                className="form-control"
+                name="Ciudad"
+                type="text"
+                onChange={this.handleChange}
+              >
+                <option>Seleccionar Ciudad</option>
+                {this.state.ciudadesFromAPI.map((ciudad, index) => (
+                  <option value={ciudad.name}>{ciudad.name}</option>
+                ))}
+              </select>
             </FormGroup>
           </ModalBody>
 

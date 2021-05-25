@@ -8,25 +8,40 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import {apiDataCiudades, apiDataPaises} from "../apis/apiPrueba";
 
 export class Ciudad extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
+      ciudadesFromAPI: [],
+      paisesFromAPI: [],
       modalInsertar: false,
       form: {
+        id: "",
         Ciudad: "",
+        Pais: ""
       },
     };
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataCiudad") != null) {
+    /*if (localStorage.getItem("dataCiudad") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataCiudad")),
       });
-    }
+    }*/
+  apiDataCiudades().then((res) =>
+      this.setState({
+        ciudadesFromAPI: res,
+      })
+    );
+  apiDataPaises().then((res) =>
+    this.setState({
+      paisesFromAPI: res,
+    })
+  );
   }
 
   mostrarModalInsertar = () => {
@@ -91,7 +106,7 @@ export class Ciudad extends React.Component {
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
-            Insertar nuevo Puesto
+            Insertar nueva Ciudad
           </Button>
           <Button color="primary" onClick={this.saveData}>
             Guardar
@@ -100,13 +115,17 @@ export class Ciudad extends React.Component {
           <Table>
             <thead>
               <tr>
+                <th>id</th>
                 <th>Ciudad</th>
+                <th>Pais</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.ciudadesFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Ciudad}</td>
+                  <td>{dato.id}</td>
+                  <td>{dato.name}</td>
+                  <td>{dato.countrieId}</td>
                   <td>
                     <Button color="danger" onClick={() => this.eliminar(dato)}>
                       Eliminar
@@ -121,6 +140,17 @@ export class Ciudad extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
+              <label>id:</label>
+              <input
+                id="agregarId"
+                className="form-control"
+                name="id"
+                type="text"
+                placeholder="Ingresar un id"
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
               <label>Ciudad:</label>
               <input
                 id="agregarCiudad"
@@ -130,6 +160,21 @@ export class Ciudad extends React.Component {
                 placeholder="En que ciudad?"
                 onChange={this.handleChange}
               />
+            </FormGroup>
+            <FormGroup>
+              <label>Pais:</label>
+              <select
+                id="agregarPais"
+                className="form-control"
+                name="Pais"
+                type="text"
+                onChange={this.handleChange}
+              >
+                <option>Seleccionar Pais</option>
+                {this.state.paisesFromAPI.map((pais, index) => (
+                  <option value={pais.name}>{pais.name}</option>
+                ))}
+              </select>
             </FormGroup>
           </ModalBody>
 

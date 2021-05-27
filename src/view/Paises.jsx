@@ -8,18 +8,19 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
-import {apiDataPaises} from "../apis/apiPrueba";
-import {postApiDataPaises} from "../apis/apiPrueba"
+import { apiDataPaises } from "../apis/apiPrueba";
+//import {postApiDataPaises} from "../apis/apiPrueba";
+import axios from "axios";
 
 export class Pais extends React.Component {
   constructor() {
     super();
     this.state = {
+      name: "Alemania",
       data: [],
       paisesFromAPI: [],
       modalInsertar: false,
       form: {
-        id:"",
         Pais: "",
       },
     };
@@ -31,25 +32,21 @@ export class Pais extends React.Component {
   }*/
 
   componentDidMount() {
-     /*if (localStorage.getItem("dataPais") != null) {
+    /*if (localStorage.getItem("dataPais") != null) {
       this.setState({
         data: JSON.parse(localStorage.getItem("dataPais")),
       });
     }*/
-   /* apiData().then(res => this.setState({
+    /* apiData().then(res => this.setState({
       paisesFromAPI: res
     }))*/
-    postApiDataPaises().then((res) =>
+
+    apiDataPaises().then((res) =>
       this.setState({
-        paisesFromAPI: res
+        paisesFromAPI: res,
       })
     );
-
-    apiDataPaises().then(res => 
-      this.setState({
-      paisesFromAPI: res
-    }));
-  };
+  }
 
   mostrarModalInsertar = () => {
     this.setState({
@@ -62,24 +59,16 @@ export class Pais extends React.Component {
   };
 
   eliminar = (dato) => {
-    var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.name
-    );
-    if (opcion === true) {
-      var contador = 0;
-      var arreglo = this.state.data;
-      // eslint-disable-next-line array-callback-return
-      arreglo.map((registro) => {
-        if (dato === registro) {
-          arreglo.splice(contador, 1);
-        }
-        contador++;
-      });
-      this.setState({ data: arreglo, modalActualizar: false });
-    }
+    axios({
+      method: "delete",
+      url: "https://api-fake-pilar-tecno.herokuapp.com/countries/4",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   };
-
-  insertar = () => {
+  //este original
+  /*insertar = () => {
     var ingresoPais = document.querySelector("#agregarPais").value;
     if (ingresoPais !== "") {
       var valorNuevo = { ...this.state.form };
@@ -89,15 +78,31 @@ export class Pais extends React.Component {
     } else {
       alert("Debes ingresar un Pais");
     }
+  };*/
+  //este abajo emanuel
+  insertar = () => {
+    axios({
+      method: "post",
+      url: "https://api-fake-pilar-tecno.herokuapp.com/countries",
+      data: {
+        name: "OtroNuncaJamas",
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   };
 
-  handleChange = (e) => {
+  /*handleChange = (e) => {
     this.setState({
       form: {
         ...this.state.form,
         [e.target.name]: e.target.value,
       },
     });
+  };*/
+  handleChange = (event) => {
+    this.setState({ name: event.target.value });
   };
 
   saveData = () => {
@@ -145,22 +150,11 @@ export class Pais extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
-              <label>id:</label>
-              <input
-                id="agregarId"
-                className="form-control"
-                name="id"
-                type="text"
-                placeholder="Ingresar un id"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-            <FormGroup>
               <label>Pais:</label>
               <input
                 id="agregarPais"
                 className="form-control"
-                name="Pais"
+                name="name"
                 type="text"
                 placeholder="Ingresar un Pais"
                 onChange={this.handleChange}

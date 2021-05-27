@@ -42,13 +42,12 @@ export const apiDataTrabajos = async () => {
 };
 
 
-export const postApiDataPaises = async () => {
+/*export const postApiDataPaises = async () => {
   const configRequest = {
     metod: "post",
     url: "https://api-fake-pilar-tecno.herokuapp.com/countries",
     data: {
-      id: "",
-      name: ""    
+      name: "Irlanda"    
     },
   };
     try {
@@ -57,7 +56,35 @@ export const postApiDataPaises = async () => {
   } catch (err) {
     console.error(err);
   }
+};*/
+/*export const postApiDataPaises = async (country) => {
+  const configRequest = {
+    metod: "post",
+    url: "https://api-fake-pilar-tecno.herokuapp.com/countries",
+    data: country,
+  };
+  try {
+    const res = await axios(configRequest);
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+};*/
+export const postApiDataPaises = (event) => {
+  
+
+  axios({
+    method: "post",
+    url: "https://api-fake-pilar-tecno.herokuapp.com/countries",
+    data: {
+      name: "",
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
+
 
 /*console.log(axios
               .post("https://jsonplaceholder.typicode.com/todos",

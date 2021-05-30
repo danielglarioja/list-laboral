@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export const WeatherForm = (props) => (
   <div className="card card-body">
@@ -7,7 +7,7 @@ export const WeatherForm = (props) => (
         <input
           type="text"
           name="city"
-          placeholder="Ingresa una Ciudad"
+          placeholder="Ingresa una Ciudad. Ej: Cordoba, Madrid"
           className="form-control"
           autoFocus
         />
@@ -16,7 +16,7 @@ export const WeatherForm = (props) => (
         <input
           type="text"
           name="country"
-          placeholder="Nombre o codigo de Pais. Ej: uk Reino Unido, AR Argentina"
+          placeholder="Ingrese un Pais. Ej: uk Reino Unido, AR Argentina"
           className="form-control"
         />
       </div>
@@ -24,10 +24,10 @@ export const WeatherForm = (props) => (
         Ver datos del tiempo
       </button>
       <div className="form-group">
-       Informacion extraida de la API de Open Weather <br />
+        Informacion extraida de la API de Open Weather para Curso de React{" "}
+        <br />
         https://openweathermap.org/api
       </div>
     </form>
-    
   </div>
 );

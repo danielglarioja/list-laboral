@@ -12,7 +12,7 @@ import {
   apiDataPaises,
   apiDataCiudades,
   apiDataEmpresas,
-  apiDataTrabajos
+  apiDataTrabajos,
 } from "../apis/apiPrueba";
 
 export default class MiApp extends React.Component {
@@ -182,7 +182,7 @@ export default class MiApp extends React.Component {
         <Container>
           <h1>PAGINA PRINCIPAL</h1>
           <h4>PUESTOS DE TRABAJO</h4>
-          <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
+          <h4>AGREGAR / ELIMINAR / GUARDAR EN LOCALSTORAGE</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>

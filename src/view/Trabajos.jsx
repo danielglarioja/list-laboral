@@ -8,31 +8,29 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
-import { apiDataTrabajos, apiDataEmpresas } from "../apis/apiPrueba";
+import axios from "axios";
+import {
+  apiDataTrabajos,
+  apiDataEmpresas,
+  postApiDataTrabajos,
+} from "../apis/apiPrueba";
 
 export class Trabajo extends React.Component {
   constructor() {
     super();
     this.state = {
+      id: "",
+      position: "",
+      description: "",
+      organizationId: "",
       data: [],
       trabajosFromAPI: [],
       empresasFromAPI: [],
       modalInsertar: false,
-      form: {
-        id: "",
-        Trabajo: "",
-        Descripcion: "",
-        Empresa: "",
-      },
     };
   }
 
   componentDidMount() {
-    /*if (localStorage.getItem("dataCiudad") != null) {
-      this.setState({
-        data: JSON.parse(localStorage.getItem("dataCiudad")),
-      });
-    }*/
     apiDataEmpresas().then((res) =>
       this.setState({
         empresasFromAPI: res,
@@ -55,47 +53,39 @@ export class Trabajo extends React.Component {
     this.setState({ modalInsertar: false });
   };
 
-  eliminar = (dato) => {
+  eliminar = async (id) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este trabajo => " + dato.position
+      "Por favor, Confirma que deseas Eliminar este trabajo ? "
     );
     if (opcion === true) {
-      var contador = 0;
-      var arreglo = this.state.data;
-      // eslint-disable-next-line array-callback-return
-      arreglo.map((registro) => {
-        if (dato === registro) {
-          arreglo.splice(contador, 1);
-        }
-        contador++;
-      });
-      this.setState({ data: arreglo, modalActualizar: false });
+      await axios.delete(
+        "https://api-fake-pilar-tecno.herokuapp.com/jobs/" + id
+      );
+      window.location.reload(true);
     }
   };
 
   insertar = () => {
-    var ingresoEmpresa = document.querySelector("#agregarEmpresa").value;
-    if (ingresoEmpresa !== "") {
-      var valorNuevo = { ...this.state.form };
-      var lista = this.state.data;
-      lista.push(valorNuevo);
-      this.setState({ modalInsertar: false, data: lista });
-    } else {
-      alert("Debes ingresar un trabajo");
-    }
+    postApiDataTrabajos(
+      this.state.position,
+      this.state.description,
+      this.state.organizationId
+    ).then((newTrabajo) =>
+      this.setState({
+        trabajosFromAPI: [...this.state.trabajosFromAPI, newTrabajo],
+        modalInsertar: false,
+      })
+    );
   };
 
-  handleChange = (e) => {
-    this.setState({
-      form: {
-        ...this.state.form,
-        [e.target.name]: e.target.value,
-      },
-    });
+  handleChange = (event) => {
+    this.setState({ position: event.target.value });
   };
-
-  saveData = () => {
-    window.localStorage.setItem("dataTrabajo", JSON.stringify(this.state.data));
+  handleChange1 = (event) => {
+    this.setState({ description: event.target.value });
+  };
+  handleChange2 = (event) => {
+    this.setState({ organizationId: event.target.value });
   };
 
   render() {
@@ -103,14 +93,11 @@ export class Trabajo extends React.Component {
       <>
         <Container>
           <h1>TRABAJOS</h1>
-          <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
+          <h4>AGREGAR / ELIMINAR / GUARDAR en la API</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
             Insertar nuevo Trabajo
-          </Button>
-          <Button color="primary" onClick={this.saveData}>
-            Guardar
           </Button>
           <br />
           <Table>
@@ -130,7 +117,10 @@ export class Trabajo extends React.Component {
                   <td>{dato.description}</td>
                   <td>{dato.organizationId}</td>
                   <td>
-                    <Button color="danger" onClick={() => this.eliminar(dato)}>
+                    <Button
+                      color="danger"
+                      onClick={() => this.eliminar(dato.id)}
+                    >
                       Eliminar
                     </Button>
                   </td>
@@ -143,24 +133,14 @@ export class Trabajo extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
-              <label>id:</label>
-              <input
-                id="agregarId"
-                className="form-control"
-                name="id"
-                type="text"
-                placeholder="Ingresar un id"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-            <FormGroup>
               <label>Trabajo:</label>
               <input
                 id="agregarTrabajo"
                 className="form-control"
-                name="Trabajo"
+                name="position"
                 type="text"
                 placeholder="Ingrese un Trabajo"
+                required
                 onChange={this.handleChange}
               />
             </FormGroup>
@@ -169,10 +149,10 @@ export class Trabajo extends React.Component {
               <input
                 id="agregarDescripcionTrabajo"
                 className="form-control"
-                name="Descripcion"
+                name="Description"
                 type="text"
                 placeholder="Ingrese una descripcion del Trabajo"
-                onChange={this.handleChange}
+                onChange={this.handleChange1}
               />
             </FormGroup>
             <FormGroup>
@@ -181,12 +161,13 @@ export class Trabajo extends React.Component {
                 id="agregarEmpresa"
                 className="form-control"
                 name="Empresa"
+                organizationId="organizationId"
                 type="text"
-                onChange={this.handleChange}
+                onChange={this.handleChange2}
               >
                 <option>Seleccionar Empresa</option>
                 {this.state.empresasFromAPI.map((empresa, index) => (
-                  <option value={empresa.name}>{empresa.name}</option>
+                  <option value={empresa.id}>{empresa.name}</option>
                 ))}
               </select>
             </FormGroup>
@@ -194,7 +175,7 @@ export class Trabajo extends React.Component {
 
           <ModalFooter>
             <Button color="primary" onClick={() => this.insertar()}>
-              Insertar
+              Enviar a la API
             </Button>
 
             <Button

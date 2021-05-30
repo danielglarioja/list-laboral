@@ -8,26 +8,27 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
-
+import { apiDataPaises, postApiDataPaises } from "../apis/apiPrueba";
+import axios from "axios";
 
 export class Pais extends React.Component {
   constructor() {
     super();
     this.state = {
+      id: "",
+      name: "",
       data: [],
+      paisesFromAPI: [],
       modalInsertar: false,
-      form: {
-        Pais: "",
-      },
     };
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataPais") != null) {
+    apiDataPaises().then((res) =>
       this.setState({
-        data: JSON.parse(localStorage.getItem("dataPais")),
-      });
-    }
+        paisesFromAPI: res,
+      })
+    );
   }
 
   mostrarModalInsertar = () => {
@@ -40,47 +41,29 @@ export class Pais extends React.Component {
     this.setState({ modalInsertar: false });
   };
 
-  eliminar = (dato) => {
+  eliminar = async (id) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.Pais
+      "Por favor, Confirma que deseas Eliminar este pais ? "
     );
     if (opcion === true) {
-      var contador = 0;
-      var arreglo = this.state.data;
-      // eslint-disable-next-line array-callback-return
-      arreglo.map((registro) => {
-        if (dato === registro) {
-          arreglo.splice(contador, 1);
-        }
-        contador++;
-      });
-      this.setState({ data: arreglo, modalActualizar: false });
+      await axios.delete(
+        "https://api-fake-pilar-tecno.herokuapp.com/countries/" + id
+      );
+      window.location.reload(true);
     }
   };
 
   insertar = () => {
-    var ingresoPais = document.querySelector("#agregarPais").value;
-    if (ingresoPais !== "") {
-      var valorNuevo = { ...this.state.form };
-      var lista = this.state.data;
-      lista.push(valorNuevo);
-      this.setState({ modalInsertar: false, data: lista });
-    } else {
-      alert("Debes ingresar un Pais");
-    }
+    postApiDataPaises(this.state.name).then((newCountry) =>
+      this.setState({
+        paisesFromAPI: [...this.state.paisesFromAPI, newCountry],
+        modalInsertar: false,
+      })
+    );
   };
 
-  handleChange = (e) => {
-    this.setState({
-      form: {
-        ...this.state.form,
-        [e.target.name]: e.target.value,
-      },
-    });
-  };
-
-  saveData = () => {
-    window.localStorage.setItem("dataPais", JSON.stringify(this.state.data));
+  handleChange = (event) => {
+    this.setState({ name: event.target.value });
   };
 
   render() {
@@ -88,28 +71,30 @@ export class Pais extends React.Component {
       <>
         <Container>
           <h1> PAISES</h1>
-          <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
+          <h4>AGREGAR / ELIMINAR / GUARDAR en la API</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
             Insertar nuevo Pais
           </Button>
-          <Button color="primary" onClick={this.saveData}>
-            Guardar
-          </Button>
           <br />
           <Table>
             <thead>
               <tr>
+                <th>id</th>
                 <th>Pais</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.paisesFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Pais}</td>
+                  <td>{dato.id}</td>
+                  <td>{dato.name}</td>
                   <td>
-                    <Button color="danger" onClick={() => this.eliminar(dato)}>
+                    <Button
+                      color="danger"
+                      onClick={() => this.eliminar(dato.id)}
+                    >
                       Eliminar
                     </Button>
                   </td>
@@ -124,9 +109,9 @@ export class Pais extends React.Component {
             <FormGroup>
               <label>Pais:</label>
               <input
-                id="agregarPais"
+                id="id"
                 className="form-control"
-                name="Pais"
+                name="name"
                 type="text"
                 placeholder="Ingresar un Pais"
                 onChange={this.handleChange}
@@ -136,7 +121,7 @@ export class Pais extends React.Component {
 
           <ModalFooter>
             <Button color="primary" onClick={() => this.insertar()}>
-              Insertar
+              Enviar a la API
             </Button>
 
             <Button

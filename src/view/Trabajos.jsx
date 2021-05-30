@@ -10,34 +10,35 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import {
-  apiDataCiudades,
-  apiDataPaises,
-  postApiDataCiudades,
+  apiDataTrabajos,
+  apiDataEmpresas,
+  postApiDataTrabajos,
 } from "../apis/apiPrueba";
 
-export class Ciudad extends React.Component {
+export class Trabajo extends React.Component {
   constructor() {
     super();
     this.state = {
       id: "",
-      name: "",
-      countrieId: "",
+      position: "",
+      description: "",
+      organizationId: "",
       data: [],
-      ciudadesFromAPI: [],
-      paisesFromAPI: [],
+      trabajosFromAPI: [],
+      empresasFromAPI: [],
       modalInsertar: false,
     };
   }
 
   componentDidMount() {
-    apiDataCiudades().then((res) =>
+    apiDataEmpresas().then((res) =>
       this.setState({
-        ciudadesFromAPI: res,
+        empresasFromAPI: res,
       })
     );
-    apiDataPaises().then((res) =>
+    apiDataTrabajos().then((res) =>
       this.setState({
-        paisesFromAPI: res,
+        trabajosFromAPI: res,
       })
     );
   }
@@ -54,59 +55,67 @@ export class Ciudad extends React.Component {
 
   eliminar = async (id) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar esta Ciudad ? "
+      "Por favor, Confirma que deseas Eliminar este trabajo ? "
     );
     if (opcion === true) {
       await axios.delete(
-        "https://api-fake-pilar-tecno.herokuapp.com/places/" + id
+        "https://api-fake-pilar-tecno.herokuapp.com/jobs/" + id
       );
       window.location.reload(true);
     }
   };
 
   insertar = () => {
-    postApiDataCiudades(this.state.name, this.state.countrieId).then(
-      (newCiudad) =>
-        this.setState({
-          ciudadesFromAPI: [...this.state.ciudadesFromAPI, newCiudad],
-          modalInsertar: false,
-        })
+    postApiDataTrabajos(
+      this.state.position,
+      this.state.description,
+      this.state.organizationId
+    ).then((newTrabajo) =>
+      this.setState({
+        trabajosFromAPI: [...this.state.trabajosFromAPI, newTrabajo],
+        modalInsertar: false,
+      })
     );
   };
 
   handleChange = (event) => {
-    this.setState({ name: event.target.value });
+    this.setState({ position: event.target.value });
   };
   handleChange1 = (event) => {
-    this.setState({ countrieId: event.target.value });
+    this.setState({ description: event.target.value });
+  };
+  handleChange2 = (event) => {
+    this.setState({ organizationId: event.target.value });
   };
 
   render() {
     return (
       <>
         <Container>
-          <h1>CIUDADES</h1>
+          <h1>TRABAJOS</h1>
           <h4>AGREGAR / ELIMINAR / GUARDAR en la API</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
-            Insertar nueva Ciudad
+            Insertar nuevo Trabajo
           </Button>
           <br />
           <Table>
             <thead>
               <tr>
                 <th>id</th>
-                <th>Ciudad</th>
-                <th>Pais</th>
+                <th>Trabajo</th>
+                <th>Descripcion</th>
+                <th>Empresa</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.ciudadesFromAPI.map((dato) => (
+              {this.state.trabajosFromAPI.map((dato) => (
                 <tr key={dato}>
                   <td>{dato.id}</td>
-                  <td>{dato.name}</td>
-                  <td>{dato.countrieId}</td>
+                  <td>{dato.position}</td>
+                  <td>{dato.description}</td>
+                  <td>{dato.organizationId}</td>
                   <td>
                     <Button
                       color="danger"
@@ -124,29 +133,41 @@ export class Ciudad extends React.Component {
         <Modal isOpen={this.state.modalInsertar}>
           <ModalBody>
             <FormGroup>
-              <label>Ciudad:</label>
+              <label>Trabajo:</label>
               <input
-                id="agregarCiudad"
+                id="agregarTrabajo"
                 className="form-control"
-                name="name"
+                name="position"
                 type="text"
-                placeholder="En que ciudad?"
+                placeholder="Ingrese un Trabajo"
+                required
                 onChange={this.handleChange}
               />
             </FormGroup>
             <FormGroup>
-              <label>Pais:</label>
-              <select
-                id="agregarPais"
+              <label>Descripcion:</label>
+              <input
+                id="agregarDescripcionTrabajo"
                 className="form-control"
-                name="Pais"
-                countrieId="countrieId"
+                name="Description"
                 type="text"
+                placeholder="Ingrese una descripcion del Trabajo"
                 onChange={this.handleChange1}
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Empresa:</label>
+              <select
+                id="agregarEmpresa"
+                className="form-control"
+                name="Empresa"
+                organizationId="organizationId"
+                type="text"
+                onChange={this.handleChange2}
               >
-                <option>Seleccionar Pais</option>
-                {this.state.paisesFromAPI.map((pais, index) => (
-                  <option value={pais.id}>{pais.name}</option>
+                <option>Seleccionar Empresa</option>
+                {this.state.empresasFromAPI.map((empresa, index) => (
+                  <option value={empresa.id}>{empresa.name}</option>
                 ))}
               </select>
             </FormGroup>

@@ -8,25 +8,38 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import axios from "axios";
+import {
+  apiDataCiudades,
+  apiDataEmpresas,
+  postApiDataEmpresas,
+} from "../apis/apiPrueba";
 
 export class Empresa extends React.Component {
   constructor() {
     super();
     this.state = {
+      id: "",
+      name: "",
+      placeId: "",
       data: [],
+      ciudadesFromAPI: [],
+      empresasFromAPI: [],
       modalInsertar: false,
-      form: {
-        Empresa: "",
-      },
     };
   }
 
   componentDidMount() {
-    if (localStorage.getItem("dataEmpresa") != null) {
+    apiDataCiudades().then((res) =>
       this.setState({
-        data: JSON.parse(localStorage.getItem("dataEmpresa")),
-      });
-    }
+        ciudadesFromAPI: res,
+      })
+    );
+    apiDataEmpresas().then((res) =>
+      this.setState({
+        empresasFromAPI: res,
+      })
+    );
   }
 
   mostrarModalInsertar = () => {
@@ -39,47 +52,33 @@ export class Empresa extends React.Component {
     this.setState({ modalInsertar: false });
   };
 
-  eliminar = (dato) => {
+  eliminar = async (id) => {
     var opcion = window.confirm(
-      "Por favor, Confirma que deseas Eliminar este puesto => " + dato.Empresa
+      "Por favor, Confirma que deseas Eliminar esta Empresa ? "
     );
     if (opcion === true) {
-      var contador = 0;
-      var arreglo = this.state.data;
-      // eslint-disable-next-line array-callback-return
-      arreglo.map((registro) => {
-        if (dato === registro) {
-          arreglo.splice(contador, 1);
-        }
-        contador++;
-      });
-      this.setState({ data: arreglo, modalActualizar: false });
+      await axios.delete(
+        "https://api-fake-pilar-tecno.herokuapp.com/organizations/" + id
+      );
+      window.location.reload(true);
     }
   };
 
   insertar = () => {
-    var ingresoEmpresa = document.querySelector("#agregarEmpresa").value;
-    if (ingresoEmpresa !== "") {
-      var valorNuevo = { ...this.state.form };
-      var lista = this.state.data;
-      lista.push(valorNuevo);
-      this.setState({ modalInsertar: false, data: lista });
-    } else {
-      alert("Debes completar todos los campos");
-    }
+    postApiDataEmpresas(this.state.name, this.state.placeId).then(
+      (newEmpresa) =>
+        this.setState({
+          empresasFromAPI: [...this.state.empresasFromAPI, newEmpresa],
+          modalInsertar: false,
+        })
+    );
   };
 
-  handleChange = (e) => {
-    this.setState({
-      form: {
-        ...this.state.form,
-        [e.target.name]: e.target.value,
-      },
-    });
+  handleChange = (event) => {
+    this.setState({ name: event.target.value });
   };
-
-  saveData = () => {
-    window.localStorage.setItem("dataEmpresa", JSON.stringify(this.state.data));
+  handleChange1 = (event) => {
+    this.setState({ placeId: event.target.value });
   };
 
   render() {
@@ -87,28 +86,32 @@ export class Empresa extends React.Component {
       <>
         <Container>
           <h1>EMPRESAS</h1>
-          <h4>AGREGAR / ELIMINAR / GUARDAR</h4>
+          <h4>AGREGAR / ELIMINAR / GUARDAR en la API</h4>
           <hr></hr>
           <br />
           <Button color="success" onClick={() => this.mostrarModalInsertar()}>
-            Insertar nuevo Puesto
-          </Button>
-          <Button color="primary" onClick={this.saveData}>
-            Guardar
+            Insertar nueva Empresa
           </Button>
           <br />
           <Table>
             <thead>
               <tr>
+                <th>id</th>
                 <th>Empresa</th>
+                <th>Ciudad</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.data.map((dato) => (
+              {this.state.empresasFromAPI.map((dato) => (
                 <tr key={dato}>
-                  <td>{dato.Empresa}</td>
+                  <td>{dato.id}</td>
+                  <td>{dato.name}</td>
+                  <td>{dato.placeId}</td>
                   <td>
-                    <Button color="danger" onClick={() => this.eliminar(dato)}>
+                    <Button
+                      color="danger"
+                      onClick={() => this.eliminar(dato.id)}
+                    >
                       Eliminar
                     </Button>
                   </td>
@@ -125,17 +128,33 @@ export class Empresa extends React.Component {
               <input
                 id="agregarEmpresa"
                 className="form-control"
-                name="Empresa"
+                name="name"
                 type="text"
                 placeholder="Nombre de la Empresa"
                 onChange={this.handleChange}
               />
             </FormGroup>
+            <FormGroup>
+              <label>Ciudad:</label>
+              <select
+                id="agregarCiudad"
+                className="form-control"
+                name="Ciudad"
+                placeId="placeId"
+                type="text"
+                onChange={this.handleChange1}
+              >
+                <option>Seleccionar Ciudad</option>
+                {this.state.ciudadesFromAPI.map((ciudad, index) => (
+                  <option value={ciudad.id}>{ciudad.name}</option>
+                ))}
+              </select>
+            </FormGroup>
           </ModalBody>
 
           <ModalFooter>
             <Button color="primary" onClick={() => this.insertar()}>
-              Insertar
+              Enviar a la API
             </Button>
 
             <Button
